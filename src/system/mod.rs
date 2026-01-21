@@ -6,7 +6,7 @@ mod random_move;
 mod end_turn;
 mod movement;
 
-use crate::{prelude::*, system::map_render::map_render_system};
+use crate::prelude::*;
 
 /*pub fn build_schedule() -> Schedule {
     Schedule::builder()
