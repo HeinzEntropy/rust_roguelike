@@ -38,7 +38,9 @@ use prelude::*;
 struct State {
     ecs: World,
     resources: Resources,
-    systems: Schedule,
+    input_systems: Schedule,
+    player_systems: Schedule,
+    monster_systems: Schedule,
 }
 impl State {
     /*fn new() -> Self {
@@ -70,7 +72,9 @@ impl State {
         Self {
             ecs,
             resources,
-            systems: build_schedule(),
+            input_systems: build_input_schedule(),
+            player_systems: build_player_schedule(),
+            monster_systems: build_monster_schedule(),
         }
     }
 }
@@ -85,14 +89,26 @@ impl GameState for State {
         //self.map.render(ctx, &self.camera);
         //self.player.render(ctx, &self.camera);
         self.resources.insert(ctx.key);
-        self.systems.execute(&mut self.ecs, &mut self.resources);
+        //根据当前的TurnState，执行不同的系统
+        let current_state = self.resources.get::<TurnState>().unwrap().clone();
+        match current_state {
+            TurnState::AwaitingInput => {
+                self.input_systems.execute(&mut self.ecs, &mut self.resources);
+            }
+            TurnState::PlayerTurn => {
+                self.player_systems.execute(&mut self.ecs, &mut self.resources);
+            }
+            TurnState::MonsterTurn => {
+                self.monster_systems.execute(&mut self.ecs, &mut self.resources);
+            }
+        }
         render_draw_buffer(ctx).expect("Render Error");
     }
 }
 
 fn main() -> BError {
     let context = BTermBuilder::new() // (1)
-        .with_title("Rust Roguelike")
+        .with_title("小张的地下城冒险")
         .with_fps_cap(30.0)
         .with_dimensions(DISPLAY_WIDTH, DISPLAY_HEIGHT) // (2)
         .with_tile_dimensions(32, 32) // (3)
