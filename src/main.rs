@@ -7,6 +7,7 @@ mod map_builder;
 mod components;
 mod spawner;
 mod system;
+mod turn_state;
 
 mod prelude {
     pub use bracket_lib::prelude::*;
@@ -24,6 +25,7 @@ mod prelude {
     pub use crate::components::*;
     pub use crate::spawner::*;
     pub use crate::system::*;
+    pub use crate::turn_state::*;
 }
 
 use prelude::*;
@@ -64,6 +66,7 @@ impl State {
             });
         resources.insert(map_builder.map);
         resources.insert(Camera::new(map_builder.player_start));
+        resources.insert(TurnState::AwaitingInput);
         Self {
             ecs,
             resources,

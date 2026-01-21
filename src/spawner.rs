@@ -27,5 +27,6 @@ pub fn spawn_enemy(
                 _ => to_cp437('g'),
             }
         },
+        MovingRandomly,
     ));
 }
