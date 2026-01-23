@@ -91,7 +91,8 @@ impl GameState for State {
         //self.map.render(ctx, &self.camera);
         //self.player.render(ctx, &self.camera);
         self.resources.insert(ctx.key);
-        
+        ctx.set_active_console(0);
+        self.resources.insert(Point::from_tuple(ctx.mouse_pos()));
         //根据当前的TurnState，执行不同的系统
         let current_state = self.resources.get::<TurnState>().unwrap().clone();
         match current_state {
