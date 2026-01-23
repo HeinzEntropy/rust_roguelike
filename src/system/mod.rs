@@ -1,4 +1,4 @@
-mod collision;
+//mod collision;不再需要碰撞系统，将使用更深入的攻击系统
 mod entity_render;
 mod map_render;
 mod player_input;
@@ -35,7 +35,7 @@ pub fn build_player_schedule() -> Schedule {
     Schedule::builder()
         .add_system(movement::movement_system())
         .flush()
-        .add_system(collision::collisions_system())
+        //.add_system(collision::collisions_system())
         .flush()
         .add_system(map_render::map_render_system())
         .add_system(entity_render::entity_render_system())
@@ -50,7 +50,7 @@ pub fn build_monster_schedule() -> Schedule {
         .flush()
         .add_system(movement::movement_system())
         .flush()
-        .add_system(collision::collisions_system())
+        //.add_system(collision::collisions_system())
         .flush()
         .add_system(map_render::map_render_system())
         .add_system(entity_render::entity_render_system())
