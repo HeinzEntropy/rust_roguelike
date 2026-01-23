@@ -40,7 +40,7 @@ pub fn goblin() -> (i32, String, FontCharType) {
     (1, "Goblin".to_string(), to_cp437('g'))
 }
 pub fn orc() -> (i32, String, FontCharType) {
-    (1, "Orc".to_string(), to_cp437('O'))
+    (2, "Orc".to_string(), to_cp437('O'))
 }
 /*pub fn goblin()->(i32, String, FontCharType){
     (1, "Goblin".to_string(), to_cp437('g'))
