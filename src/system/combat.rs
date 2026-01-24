@@ -1,0 +1,23 @@
+use crate::prelude::*;
+
+#[system]
+#[read_component(WantsToAttack)]
+#[write_component(Health)]
+pub fn combat(ecs: &mut SubWorld, commands: &mut CommandBuffer) {
+    let mut attacker = <(Entity, &WantsToAttack)>::query();
+    let victims: Vec<(Entity, Entity)> = attacker
+        .iter(ecs)
+        .map(|(entity, attack)| (*entity, attack.victim))
+        .collect();
+    victims.iter().for_each(|(message, victim)| {
+        if let Ok(health) = ecs.entry_mut(*victim).unwrap().get_component_mut::<Health>() {
+            println!("health before attack: {}", health.current);
+            health.current -= 1;
+            if health.current <= 0 {
+                commands.remove(*victim);
+            }
+            println!("health after attack: {}", health.current);
+        }
+        commands.remove(*message);
+    });
+}
