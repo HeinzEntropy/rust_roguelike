@@ -11,16 +11,6 @@ mod tooltips;
 
 use crate::prelude::*;
 
-/*pub fn build_schedule() -> Schedule {
-    Schedule::builder()
-        .add_system(player_input::player_input_system())
-        .add_system(collision::collisions_system())
-        .flush()
-        .add_system(map_render::map_render_system())
-        .add_system(entity_render::entity_render_system())
-        .add_system(random_move::random_move_system())
-        .build()
-}*/
 pub fn build_input_schedule() -> Schedule {
     Schedule::builder()
         .add_system(player_input::player_input_system())
@@ -38,7 +28,6 @@ pub fn build_player_schedule() -> Schedule {
         .flush()
         .add_system(movement::movement_system())
         .flush()
-        //.add_system(collision::collisions_system())
         .flush()
         .add_system(map_render::map_render_system())
         .add_system(entity_render::entity_render_system())
@@ -55,8 +44,6 @@ pub fn build_monster_schedule() -> Schedule {
         .flush()
         .add_system(movement::movement_system())
         .flush()
-        //.add_system(collision::collisions_system())
-        //.flush()
         .add_system(map_render::map_render_system())
         .add_system(entity_render::entity_render_system())
         .add_system(hud::hud_system())

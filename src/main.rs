@@ -43,15 +43,6 @@ struct State {
     monster_systems: Schedule,
 }
 impl State {
-    /*fn new() -> Self {
-        let mut rng = RandomNumberGenerator::new();
-        let map_builder = MapBuilder::new(&mut rng);
-        Self {
-            map: map_builder.map,
-            //player: Player::new(map_builder.player_start),
-            camera: Camera::new(map_builder.player_start),
-        }
-    }*/
     fn new() -> Self {
         let mut ecs = World::default();
         let mut resources = Resources::default();
@@ -87,9 +78,6 @@ impl GameState for State {
         ctx.cls();
         ctx.set_active_console(2);
         ctx.cls();
-        //self.player.update(ctx, &self.map, &mut self.camera);
-        //self.map.render(ctx, &self.camera);
-        //self.player.render(ctx, &self.camera);
         self.resources.insert(ctx.key);
         ctx.set_active_console(0);
         self.resources.insert(Point::from_tuple(ctx.mouse_pos()));
