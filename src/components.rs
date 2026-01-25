@@ -35,3 +35,6 @@ pub struct Health{//生命值组件
 
 #[derive(Clone, PartialEq)]
 pub struct Name(pub String);//名称组件
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct ChasingPlayer;//追逐玩家组件
