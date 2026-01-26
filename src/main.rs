@@ -177,19 +177,35 @@ impl GameState for State {
     }
 }
 
+/// 游戏的主函数，负责初始化游戏环境并启动主循环
+/// 返回BError类型，用于处理可能的初始化错误
 fn main() -> BError {
-    let context = BTermBuilder::new() // (1)
+    // 创建BTermBuilder实例，用于配置游戏窗口和渲染环境
+    let context = BTermBuilder::new()
+        // 设置游戏窗口标题为"小张的地下城冒险"
         .with_title("小张的地下城冒险")
+        // 设置游戏帧率上限为30.0fps，平衡游戏流畅度和性能消耗
         .with_fps_cap(30.0)
-        .with_dimensions(DISPLAY_WIDTH, DISPLAY_HEIGHT) // (2)
-        .with_tile_dimensions(32, 32) // (3)
-        .with_resource_path("resources/") // (4)
-        .with_font("dungeonfont.png", 32, 32) // (5)
-        .with_font("terminal8x8.png", 8, 8) // (5)
-        .with_simple_console(DISPLAY_WIDTH, DISPLAY_HEIGHT, "dungeonfont.png") // (6)
-        .with_simple_console_no_bg(DISPLAY_WIDTH, DISPLAY_HEIGHT, "dungeonfont.png") // (7)
-        .with_simple_console_no_bg(SCREEN_WIDTH * 2, SCREEN_HEIGHT * 2, "terminal8x8.png") // (8)
+        // 设置游戏显示尺寸，使用预定义的DISPLAY_WIDTH和DISPLAY_HEIGHT常量
+        .with_dimensions(DISPLAY_WIDTH, DISPLAY_HEIGHT)
+        // 设置每个游戏图块的像素尺寸为32x32
+        .with_tile_dimensions(32, 32)
+        // 设置游戏资源文件的路径
+        .with_resource_path("resources/")
+        // 添加32x32的地下城字体，用于渲染游戏场景
+        .with_font("dungeonfont.png", 32, 32)
+        // 添加8x8的终端字体，用于渲染文本信息
+        .with_font("terminal8x8.png", 8, 8)
+        // 创建主游戏控制台（控制台0），带背景，使用地下城字体
+        .with_simple_console(DISPLAY_WIDTH, DISPLAY_HEIGHT, "dungeonfont.png")
+        // 创建第二控制台（控制台1），不带背景，使用地下城字体
+        .with_simple_console_no_bg(DISPLAY_WIDTH, DISPLAY_HEIGHT, "dungeonfont.png")
+        // 创建第三控制台（控制台2），不带背景，使用终端字体，用于显示游戏UI
+        .with_simple_console_no_bg(SCREEN_WIDTH * 2, SCREEN_HEIGHT * 2, "terminal8x8.png")
+        // 构建BTerm上下文，?操作符用于错误传播
         .build()?;
-
+    
+    // 启动游戏主循环，传入构建好的上下文和初始游戏状态
+    // main_loop会持续运行，直到游戏结束或发生错误
     main_loop(context, State::new())
 }
