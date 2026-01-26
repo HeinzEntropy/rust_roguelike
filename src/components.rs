@@ -38,3 +38,9 @@ pub struct Name(pub String);//名称组件
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct ChasingPlayer;//追逐玩家组件
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct  Item;//物品组件
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct  AmuletOfYala;//雅拉的护身符
+
