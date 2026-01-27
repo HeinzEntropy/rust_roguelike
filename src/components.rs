@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 pub use crate::prelude::*;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -44,3 +46,26 @@ pub struct  Item;//物品组件
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct  AmuletOfYala;//雅拉的护身符
 
+#[derive(Clone, Debug, PartialEq)]
+pub struct  FeildOfView{//视野组件
+    pub visible_tiles : HashSet<Point>,
+    pub radius : i32,
+    pub is_dirty : bool,
+}
+
+impl FeildOfView {
+    pub fn new(radius : i32) -> Self {
+        Self {
+            visible_tiles : HashSet::new(),
+            radius,
+            is_dirty : true,
+        }
+    }
+    pub fn clone_dirty(&self) -> Self {
+        Self {
+            visible_tiles : self.visible_tiles.clone(),
+            radius: self.radius,
+            is_dirty : true,
+        }
+    }
+}

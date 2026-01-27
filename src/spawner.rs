@@ -13,11 +13,12 @@ pub fn spawn_player(ecs: &mut World, pos: Point) {
             current: MAX_HEALTH,
             max: MAX_HEALTH,
         },
+        FeildOfView::new(8),
     ));
 }
 
 pub fn spawn_enemy(ecs: &mut World, rng: &mut RandomNumberGenerator, pos: Point) {
-    let (hp, name, glyph) = match rng.roll_dice(1, 10) {
+    let (hp, name, glyph,view_radius) = match rng.roll_dice(1, 10) {
         1..=8 => goblin(),
         _ => orc(),
     };
@@ -35,14 +36,15 @@ pub fn spawn_enemy(ecs: &mut World, rng: &mut RandomNumberGenerator, pos: Point)
             max: hp,
         },
         Name(name),
+        FeildOfView::new(view_radius),
     ));
 }
 
-pub fn goblin() -> (i32, String, FontCharType) {
-    (1, "Goblin".to_string(), to_cp437('g'))
+pub fn goblin() -> (i32, String, FontCharType, i32) {
+    (1, "Goblin".to_string(), to_cp437('g'), 6)
 }
-pub fn orc() -> (i32, String, FontCharType) {
-    (2, "Orc".to_string(), to_cp437('O'))
+pub fn orc() -> (i32, String, FontCharType, i32) {
+    (2, "Orc".to_string(), to_cp437('O'), 5)
 }
 
 pub fn spawn_amulet_of_yala(ecs: &mut World, pos: Point) {
