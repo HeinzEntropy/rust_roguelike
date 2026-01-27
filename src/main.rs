@@ -51,14 +51,17 @@ impl State {
         let map_builder = MapBuilder::new(&mut rng);
         spawn_player(&mut ecs, map_builder.player_start);
         spawn_amulet_of_yala(&mut ecs, map_builder.amulet_start);
-        map_builder
-            .rooms
-            .iter()
-            .skip(1)
-            .map(|r| r.center())
-            .for_each(|pos| {
-                spawn_enemy(&mut ecs, &mut rng, pos);
-            });
+        /*map_builder
+        .rooms
+        .iter()
+        .skip(1)
+        .map(|r| r.center())
+        .for_each(|pos| {
+            spawn_enemy(&mut ecs, &mut rng, pos);
+        });*/
+        map_builder.monster_spawns.iter().for_each(|pos| {
+            spawn_enemy(&mut ecs, &mut rng, *pos);
+        });
         resources.insert(map_builder.map);
         resources.insert(Camera::new(map_builder.player_start));
         resources.insert(TurnState::AwaitingInput);
@@ -126,14 +129,17 @@ impl State {
         let map_builder = MapBuilder::new(&mut rng);
         spawn_player(&mut self.ecs, map_builder.player_start);
         spawn_amulet_of_yala(&mut self.ecs, map_builder.amulet_start);
-        map_builder
-            .rooms
-            .iter()
-            .skip(1)
-            .map(|r| r.center())
-            .for_each(|pos| {
-                spawn_enemy(&mut self.ecs, &mut rng, pos);
-            });
+        /*map_builder
+        .rooms
+        .iter()
+        .skip(1)
+        .map(|r| r.center())
+        .for_each(|pos| {
+            spawn_enemy(&mut self.ecs, &mut rng, pos);
+        });*/
+        map_builder.monster_spawns.iter().for_each(|pos| {
+            spawn_enemy(&mut self.ecs, &mut rng, *pos);
+        });
         self.resources.insert(map_builder.map);
         self.resources.insert(Camera::new(map_builder.player_start));
         self.resources.insert(TurnState::AwaitingInput);
@@ -204,7 +210,7 @@ fn main() -> BError {
         .with_simple_console_no_bg(SCREEN_WIDTH * 2, SCREEN_HEIGHT * 2, "terminal8x8.png")
         // 构建BTerm上下文，?操作符用于错误传播
         .build()?;
-    
+
     // 启动游戏主循环，传入构建好的上下文和初始游戏状态
     // main_loop会持续运行，直到游戏结束或发生错误
     main_loop(context, State::new())
