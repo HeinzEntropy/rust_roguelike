@@ -1,17 +1,20 @@
 use crate::prelude::*;
 
 mod empty;
-//use empty::EmptyArchitect;
-
+use empty::EmptyArchitect;
 mod rooms;
 use rooms::RoomArchitect;
+mod automatas;
+use automatas::CellularAutomataArchitect;
+mod drunkark;
+use drunkark::DrunkarksWalkArchitect;
 
 trait MapArchitect {
-    fn new(&mut self, rng: &mut RandomNumberGenerator)->MapBuilder;
+    fn new(&mut self, rng: &mut RandomNumberGenerator) -> MapBuilder;
 }
 
 const NUM_ROOMS: usize = 20;
-
+const NUM_MONSTERS: usize = 50;
 pub struct MapBuilder {
     pub map: Map,
     pub rooms: Vec<Rect>,
@@ -21,26 +24,17 @@ pub struct MapBuilder {
 }
 
 impl MapBuilder {
-    /*pub fn new(rng: &mut RandomNumberGenerator) -> Self {
-        let mut mb = MapBuilder {
-            map: Map::new(),
-            rooms: Vec::new(),
-            monster_spawns: Vec::new(),
-            player_start: Point::zero(),
-            amulet_start: Point::zero(),
-        };
-        mb.fill(TileType::Wall);//把地图全部填充为墙
-        mb.build_random_rooms(rng);//构造随机大小的房间
-        mb.build_corridors(rng);//构造走廊
-        mb.player_start = mb.rooms[0].center();// 把player放在第一个房间的中心
-        mb.amulet_start = mb.find_most_distant();//把amulet放在最远的可达位置
-        mb//返回mb
-    }*/
+    /** 随机选择一个地图构建器，倾向于DrunkarksWalkArchitect，这个是联通的 */
     pub fn new(rng: &mut RandomNumberGenerator) -> Self {
-        //let mut architect = EmptyArchitect{};
-        let mut architect = RoomArchitect{};
+        let method_seed = rng.range(0, 200);
+        let mut architect: Box<dyn MapArchitect> = match method_seed {
+            0 => Box::new(CellularAutomataArchitect {}),
+            1 => Box::new(RoomArchitect {}),
+            2 => Box::new(EmptyArchitect {}),
+            _ => Box::new(DrunkarksWalkArchitect {}),
+        };
+        println!("method_seed: {}", method_seed);
         architect.new(rng)
-
     }
     fn fill(&mut self, tile: TileType) {
         self.map.tiles.iter_mut().for_each(|t| *t = tile);
@@ -60,11 +54,33 @@ impl MapBuilder {
                 .map
                 .iter()
                 .enumerate()
-                .filter(|(_,dist)| *dist < UNREACHABLE)
+                .filter(|(_, dist)| *dist < UNREACHABLE)
                 .max_by(|a, b| a.1.partial_cmp(b.1).unwrap())
                 .unwrap()
                 .0,
         )
+    }
+    /**从地图上随机选择一个点作为怪物的出生点，如果采用元胞自动机，位置可能不可达*/
+    fn spawn_monster(&self, start: &Point, rng: &mut RandomNumberGenerator) -> Vec<Point> {
+        let mut spawnable_tiles: Vec<Point> = self
+            .map
+            .tiles
+            .iter()
+            .enumerate()
+            .filter(|(idx, t)| {
+                **t == TileType::Floor
+                    && DistanceAlg::Pythagoras.distance2d(*start, self.map.index_to_point2d(*idx))
+                        > 10.0
+            })
+            .map(|(idx, _)| self.map.index_to_point2d(idx))
+            .collect();
+        let mut spawns = Vec::new();
+        for _ in 0..NUM_MONSTERS {
+            let target_idx = rng.random_slice_index(&spawnable_tiles).unwrap();
+            spawns.push(spawnable_tiles[target_idx].clone());
+            spawnable_tiles.remove(target_idx);
+        }
+        spawns
     }
 
     fn build_random_rooms(&mut self, rng: &mut RandomNumberGenerator) {

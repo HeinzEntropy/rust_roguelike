@@ -1,6 +1,6 @@
 use crate::prelude::*;
 
-const MAX_HEALTH: i32 = 20;
+const PLAYER_MAX_HEALTH: i32 = 50;
 pub fn spawn_player(ecs: &mut World, pos: Point) {
     ecs.push((
         Player,
@@ -10,8 +10,8 @@ pub fn spawn_player(ecs: &mut World, pos: Point) {
             glyph: to_cp437('@'),
         },
         Health {
-            current: MAX_HEALTH,
-            max: MAX_HEALTH,
+            current: PLAYER_MAX_HEALTH,
+            max: PLAYER_MAX_HEALTH,
         },
         FeildOfView::new(8),
     ));

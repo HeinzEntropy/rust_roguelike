@@ -24,7 +24,7 @@ impl Map {
             revealed_tiles: vec![false; NUM_TILES],
         }
     }
-
+    /** 判断点是否在地图边界内 */
     pub fn in_bounds(&self, point: Point) -> bool {
         point.x >= 0 && point.x < SCREEN_WIDTH && point.y >= 0 && point.y < SCREEN_HEIGHT
     }
