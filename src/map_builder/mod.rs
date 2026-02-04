@@ -8,7 +8,8 @@ mod automatas;
 use automatas::CellularAutomataArchitect;
 mod drunkark;
 use drunkark::DrunkarksWalkArchitect;
-mod predab;
+mod prefab;
+use prefab::apply_prefab;
 trait MapArchitect {
     fn new(&mut self, rng: &mut RandomNumberGenerator) -> MapBuilder;
 }
@@ -28,13 +29,16 @@ impl MapBuilder {
     pub fn new(rng: &mut RandomNumberGenerator) -> Self {
         let method_seed = rng.range(0, 4);
         let mut architect: Box<dyn MapArchitect> = match method_seed {
-            0 => Box::new(CellularAutomataArchitect {}),
+            /*0 => Box::new(CellularAutomataArchitect {}),
             1 => Box::new(RoomArchitect {}),
             2 => Box::new(EmptyArchitect {}),
-            _ => Box::new(DrunkarksWalkArchitect {}),
+            _ => Box::new(DrunkarksWalkArchitect {}),*/
+            _ => Box::new(EmptyArchitect {}),
         };
         println!("method_seed: {}", method_seed);
-        architect.new(rng)
+        let mut mb = architect.new(rng);
+        apply_prefab(&mut mb, rng);
+        mb
     }
     fn fill(&mut self, tile: TileType) {
         self.map.tiles.iter_mut().for_each(|t| *t = tile);
