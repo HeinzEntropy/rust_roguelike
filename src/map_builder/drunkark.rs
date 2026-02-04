@@ -1,6 +1,6 @@
 use super::MapArchitect;
 use crate::prelude::*;
-
+///  drunkark地图构建器，地图中首先填充为墙，通过多次随机游走生成连通的地图，最后删除所有距离大于2000（即不可达的）的点
 pub struct DrunkarksWalkArchitect {}
 
 const STAGGER_DISTANCE: usize = 400;
@@ -15,6 +15,7 @@ impl MapArchitect for DrunkarksWalkArchitect {
             monster_spawns: Vec::new(),
             player_start: Point::zero(),
             amulet_start: Point::zero(),
+            theme: super::themes::Dungeon_Theme::new(),
         };
         mb.fill(TileType::Wall);
         let center = Point::new(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);

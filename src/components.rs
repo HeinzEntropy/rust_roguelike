@@ -69,3 +69,11 @@ impl FeildOfView {
         }
     }
 }
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+//提供治疗组件
+pub struct ProvidesHealing{
+    pub amount : i32,
+}
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct ProvidesDungeonMap;//揭示地牢地图组件

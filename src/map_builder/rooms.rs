@@ -1,6 +1,8 @@
+//！这是一个房间地图构建器模块
 use crate::prelude::*;
 use super::MapArchitect;
 
+/// 房间地图构建器，地图中随机生成矩形房间，房间之间通过走廊连接
 pub struct RoomArchitect{}
 
 impl MapArchitect for RoomArchitect{
@@ -11,6 +13,7 @@ impl MapArchitect for RoomArchitect{
             monster_spawns: Vec::new(),
             player_start: Point::zero(),
             amulet_start: Point::zero(),
+            theme: super::themes::Dungeon_Theme::new(),
         };
         mb.fill(TileType::Wall);//把地图全部填充为墙
         mb.build_random_rooms(rng);//构造随机大小的房间

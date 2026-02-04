@@ -1,6 +1,8 @@
+//！这是一个空地图构建器模块
 use super::MapArchitect;
 use crate::prelude::*;
 
+/// 空地图构建器，地图全部填充为地板
 pub struct EmptyArchitect {}
 
 impl MapArchitect for EmptyArchitect {
@@ -11,6 +13,7 @@ impl MapArchitect for EmptyArchitect {
             monster_spawns: Vec::new(),
             player_start: Point::zero(),
             amulet_start: Point::zero(),
+            theme: super::themes::Dungeon_Theme::new(),
         };
         mb.fill(TileType::Floor); //把地图全部填充为墙
         mb.player_start = Point::new(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);

@@ -1,6 +1,6 @@
 use super::MapArchitect;
 use crate::prelude::*;
-
+/// 细胞自动机地图构建器，地图中随机生成地板和墙，通过迭代生成连通的地图，最后删除所有距离大于2000（即不可达的）的点
 pub struct CellularAutomataArchitect {}
 
 impl MapArchitect for CellularAutomataArchitect {
@@ -11,6 +11,7 @@ impl MapArchitect for CellularAutomataArchitect {
             monster_spawns: Vec::new(),
             player_start: Point::zero(),
             amulet_start: Point::zero(),
+            theme: super::themes::Dungeon_Theme::new(),
         };
         self.random_noise_map(rng, &mut mb.map);
         for _ in 0..10 {

@@ -1,5 +1,6 @@
 use crate::prelude::*;
 
+/** 地图构建器模块，包含了所有地图构建器的实现 */
 mod empty;
 use empty::EmptyArchitect;
 mod rooms;
@@ -10,18 +11,28 @@ mod drunkark;
 use drunkark::DrunkarksWalkArchitect;
 mod prefab;
 use prefab::apply_prefab;
+
+/** 地图构建器 trait，声明了地图构建的规范 */
 trait MapArchitect {
     fn new(&mut self, rng: &mut RandomNumberGenerator) -> MapBuilder;
 }
-
+/** 地图主题模块 */
+mod themes;
+use themes::*;
+/** 地图主题 trait，声明了地图的外观规范 */
+pub trait MapTheme : Sync + Send {
+    fn tile_to_render(&self, tile: TileType) -> FontCharType;
+}
 const NUM_ROOMS: usize = 20;
 const NUM_MONSTERS: usize = 50;
+/** 地图构建器，包含了地图的所有信息 */
 pub struct MapBuilder {
     pub map: Map,
     pub rooms: Vec<Rect>,
     pub monster_spawns: Vec<Point>,
     pub player_start: Point,
     pub amulet_start: Point,
+    pub theme: Box<dyn MapTheme>,
 }
 
 impl MapBuilder {
@@ -29,21 +40,25 @@ impl MapBuilder {
     pub fn new(rng: &mut RandomNumberGenerator) -> Self {
         let method_seed = rng.range(0, 4);
         let mut architect: Box<dyn MapArchitect> = match method_seed {
-            /*0 => Box::new(CellularAutomataArchitect {}),
+            0 => Box::new(CellularAutomataArchitect {}),
             1 => Box::new(RoomArchitect {}),
             2 => Box::new(EmptyArchitect {}),
-            _ => Box::new(DrunkarksWalkArchitect {}),*/
-            _ => Box::new(EmptyArchitect {}),
+            _ => Box::new(DrunkarksWalkArchitect {}),
         };
         println!("method_seed: {}", method_seed);
         let mut mb = architect.new(rng);
         apply_prefab(&mut mb, rng);
+        mb.theme = match rng.range(0, 2){
+            0 => Dungeon_Theme::new(),
+            _ => Forest_Theme::new(),
+        };
         mb
     }
+    /** 填充地图上的所有点为指定的类型 */
     fn fill(&mut self, tile: TileType) {
         self.map.tiles.iter_mut().for_each(|t| *t = tile);
     }
-
+    /** 找到地图上最远的点 */
     fn find_most_distant(&self) -> Point {
         let dijkstra_map = DijkstraMap::new(
             SCREEN_WIDTH,
@@ -64,7 +79,9 @@ impl MapBuilder {
                 .0,
         )
     }
-    /**从地图上随机选择一个点作为怪物的出生点，如果采用元胞自动机，位置可能不可达*/
+    /**从地图上随机选择一个点作为怪物的出生点，如果采用元胞自动机，位置可能不可达
+     * 经过修饰后所有地板都可达
+    */
     fn spawn_monster(&self, start: &Point, rng: &mut RandomNumberGenerator) -> Vec<Point> {
         let mut spawnable_tiles: Vec<Point> = self
             .map
@@ -86,7 +103,7 @@ impl MapBuilder {
         }
         spawns
     }
-
+    /** 随机生成房间，房间之间通过走廊连接 */
     fn build_random_rooms(&mut self, rng: &mut RandomNumberGenerator) {
         // (2)
         while self.rooms.len() < NUM_ROOMS {
@@ -117,7 +134,7 @@ impl MapBuilder {
             }
         }
     }
-
+    /** 随机生成水平走廊 */
     fn apply_horizontal_tunnel(&mut self, x1: i32, x2: i32, y: i32) {
         use std::cmp::{max, min};
         for x in min(x1, x2)..=max(x1, x2) {
@@ -126,7 +143,7 @@ impl MapBuilder {
             }
         }
     }
-
+    /** 随机生成垂直走廊 */
     fn apply_vertical_tunnel(&mut self, y1: i32, y2: i32, x: i32) {
         use std::cmp::{max, min};
         for y in min(y1, y2)..=max(y1, y2) {
@@ -135,7 +152,7 @@ impl MapBuilder {
             }
         }
     }
-
+    /** 随机生成走廊，走廊之间通过走廊连接 */
     fn build_corridors(&mut self, rng: &mut RandomNumberGenerator) {
         let mut rooms = self.rooms.clone();
         rooms.sort_by(|a, b| a.center().x.cmp(&b.center().x)); // (7)
