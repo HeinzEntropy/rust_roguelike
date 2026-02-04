@@ -1,12 +1,12 @@
 use crate::prelude::*;
 
-pub struct Dungeon_Theme{}
-impl Dungeon_Theme {
+pub struct DungeonTheme{}
+impl DungeonTheme {
     pub fn new() -> Box<dyn MapTheme> {
         Box::new(Self {})
     }
 }
-impl MapTheme for Dungeon_Theme {
+impl MapTheme for DungeonTheme {
     fn tile_to_render(&self, tile: TileType) -> FontCharType {
         match tile {
             TileType::Floor => to_cp437('.'),
@@ -15,13 +15,13 @@ impl MapTheme for Dungeon_Theme {
     }
 }
 
-pub struct Forest_Theme{}
-impl Forest_Theme {
+pub struct ForestTheme{}
+impl ForestTheme {
     pub fn new() -> Box<dyn MapTheme> {
         Box::new(Self {})
     }
 }
-impl MapTheme for Forest_Theme {
+impl MapTheme for ForestTheme {
     fn tile_to_render(&self, tile: TileType) -> FontCharType {
         match tile {
             TileType::Floor => to_cp437(';'),

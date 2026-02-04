@@ -13,7 +13,7 @@ impl MapArchitect for RoomArchitect{
             monster_spawns: Vec::new(),
             player_start: Point::zero(),
             amulet_start: Point::zero(),
-            theme: super::themes::Dungeon_Theme::new(),
+            theme: super::themes::DungeonTheme::new(),
         };
         mb.fill(TileType::Wall);//把地图全部填充为墙
         mb.build_random_rooms(rng);//构造随机大小的房间

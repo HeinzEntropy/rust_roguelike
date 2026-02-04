@@ -1,4 +1,4 @@
-use crate::{components::*, map};
+use crate::prelude::*;
 
 #[system]
 #[read_component(ActivateItem)]

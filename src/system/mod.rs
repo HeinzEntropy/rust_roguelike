@@ -13,7 +13,7 @@ mod field_of_view;
 mod use_item;
 mod rest;
 
-use crate::{prelude::*, system::use_item::use_item};
+use crate::prelude::*;
 
 pub fn build_input_schedule() -> Schedule {
     Schedule::builder()

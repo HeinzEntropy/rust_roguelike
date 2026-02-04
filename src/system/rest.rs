@@ -5,7 +5,7 @@ use crate::prelude::*;
 #[read_component(Rest)]
 #[read_component(Entity)]
 pub fn rest(ecs: &mut SubWorld, commands: &mut CommandBuffer) {
-    let mut rest_and_object = <(Entity, &Rest)>::query()
+    let rest_and_object = <(Entity, &Rest)>::query()
         .iter(ecs)
         .filter(|(_, rest)| {
             ecs.entry_ref(rest.who_rested)

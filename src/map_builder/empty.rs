@@ -13,7 +13,7 @@ impl MapArchitect for EmptyArchitect {
             monster_spawns: Vec::new(),
             player_start: Point::zero(),
             amulet_start: Point::zero(),
-            theme: super::themes::Dungeon_Theme::new(),
+            theme: super::themes::DungeonTheme::new(),
         };
         mb.fill(TileType::Floor); //把地图全部填充为墙
         mb.player_start = Point::new(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
