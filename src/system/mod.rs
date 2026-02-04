@@ -11,6 +11,7 @@ mod tooltips;
 mod chasing;
 mod field_of_view;
 mod use_item;
+mod rest;
 
 use crate::{prelude::*, system::use_item::use_item};
 
@@ -28,6 +29,7 @@ pub fn build_input_schedule() -> Schedule {
 
 pub fn build_player_schedule() -> Schedule {
     Schedule::builder()
+        .add_system(rest::rest_system())
         .add_system(use_item::use_item_system())
         .add_system(combat::combat_system())
         .flush()

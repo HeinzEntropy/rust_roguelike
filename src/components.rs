@@ -91,3 +91,9 @@ pub struct ActivateItem {
     pub used_by: Entity,
     pub item: Entity,
 }
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+//休息组件
+pub struct Rest {
+    pub who_rested: Entity,
+}
