@@ -88,7 +88,7 @@ pub fn spawn_magic_mapper(ecs: &mut World, pos: Point) {
         pos,
         Render {
             color: ColorPair::new(WHITE, BLACK),
-            glyph: to_cp437('?'),
+            glyph: to_cp437('{'),
         },
         Name("Dungeon Map".to_string()),
         ProvidesDungeonMap,

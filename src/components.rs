@@ -77,3 +77,6 @@ pub struct ProvidesHealing{
 }
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct ProvidesDungeonMap;//揭示地牢地图组件
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct Carried(pub Entity);//携带组件

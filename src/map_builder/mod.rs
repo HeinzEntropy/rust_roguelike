@@ -96,7 +96,8 @@ impl MapBuilder {
             .map(|(idx, _)| self.map.index_to_point2d(idx))
             .collect();
         let mut spawns = Vec::new();
-        for _ in 0..NUM_MONSTERS {
+
+        for _ in 0..std::cmp::min(NUM_MONSTERS, spawnable_tiles.len()) {
             let target_idx = rng.random_slice_index(&spawnable_tiles).unwrap();
             spawns.push(spawnable_tiles[target_idx].clone());
             spawnable_tiles.remove(target_idx);
