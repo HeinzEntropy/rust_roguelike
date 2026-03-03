@@ -2,6 +2,8 @@ use super::MapArchitect;
 use crate::prelude::*;
 /// 细胞自动机地图构建器，地图中随机生成地板和墙，通过迭代生成连通的地图，最后删除所有距离大于2000（即不可达的）的点
 pub struct CellularAutomataArchitect {}
+const NUM_TILES: usize = (SCREEN_WIDTH * SCREEN_HEIGHT) as usize;
+const DESIRED_FLOOR: usize = NUM_TILES / 3;
 
 impl MapArchitect for CellularAutomataArchitect {
     fn new(&mut self, rng: &mut RandomNumberGenerator) -> MapBuilder {
@@ -17,8 +19,8 @@ impl MapArchitect for CellularAutomataArchitect {
         for _ in 0..10 {
             self.iteration(&mut mb.map);
         }
-        let start = self.find_start(&mb.map);
-        let dijkstra_map = DijkstraMap::new(
+        let mut start = self.find_start(&mb.map);
+        let mut dijkstra_map = DijkstraMap::new(
             SCREEN_WIDTH,
             SCREEN_HEIGHT,
             &vec![mb.map.point2d_to_index(start)],
@@ -32,7 +34,6 @@ impl MapArchitect for CellularAutomataArchitect {
             .enumerate()
             .filter(|(_, distance)| **distance > 2000.0)
             .for_each(|(idx, _)| mb.map.tiles[idx] = TileType::Wall);
-
         mb.monster_spawns = mb.spawn_monster(&start, rng);
         mb.player_start = start;
         mb.amulet_start = mb.find_most_distant();

@@ -38,7 +38,7 @@ pub struct MapBuilder {
 impl MapBuilder {
     /** 随机选择一个地图构建器，倾向于DrunkarksWalkArchitect，这个是联通的 */
     pub fn new(rng: &mut RandomNumberGenerator) -> Self {
-        let method_seed = rng.range(0, 4);
+        let method_seed = rng.range(0, 50);
         let mut architect: Box<dyn MapArchitect> = match method_seed {
             0 => Box::new(CellularAutomataArchitect {}),
             1 => Box::new(RoomArchitect {}),

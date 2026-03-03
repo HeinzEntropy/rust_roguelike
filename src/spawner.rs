@@ -3,7 +3,7 @@ use crate::prelude::*;
 const PLAYER_MAX_HEALTH: i32 = 50;
 pub fn spawn_player(ecs: &mut World, pos: Point) {
     ecs.push((
-        Player,
+        Player { map_level: 0 },
         pos,
         Render {
             color: ColorPair::new(WHITE, BLACK),
@@ -14,6 +14,7 @@ pub fn spawn_player(ecs: &mut World, pos: Point) {
             max: PLAYER_MAX_HEALTH,
         },
         FeildOfView::new(8),
+        RestCounter(0),
     ));
 }
 

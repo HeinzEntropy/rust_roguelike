@@ -10,7 +10,9 @@ pub struct Render {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
-pub struct Player; //玩家组件
+pub struct Player {
+    pub map_level: u32,
+} //玩家组件
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Enemy; //敌人组件
@@ -97,3 +99,6 @@ pub struct ActivateItem {
 pub struct Rest {
     pub who_rested: Entity,
 }
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct RestCounter(pub usize); //休息计数器组件
