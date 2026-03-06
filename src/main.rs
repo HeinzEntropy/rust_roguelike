@@ -18,6 +18,7 @@ mod prelude {
     pub const SCREEN_HEIGHT: i32 = 50;
     pub const DISPLAY_WIDTH: i32 = SCREEN_WIDTH / 2;
     pub const DISPLAY_HEIGHT: i32 = SCREEN_HEIGHT / 2;
+    pub const MAX_LEVEL: u32 = 2;
     pub use crate::camera::*;
     pub use crate::map::*;
     pub use crate::map_builder::*;
@@ -118,21 +119,75 @@ impl State {
     }
 
     fn reset_game_state(&mut self) {
-        self.ecs = World::default();
-        self.resources = Resources::default();
+        let mut ecs = World::default();
+        let mut resources = Resources::default();
         let mut rng = RandomNumberGenerator::new();
-        let map_builder = MapBuilder::new(&mut rng);
-        spawn_player(&mut self.ecs, map_builder.player_start);
-        spawn_amulet_of_yala(&mut self.ecs, map_builder.amulet_start);
+        let mut map_builder = MapBuilder::new(&mut rng);
+        spawn_player(&mut ecs, map_builder.player_start);
+        //spawn_amulet_of_yala(&mut ecs, map_builder.amulet_start);
+        let exit_idx = map_builder.map.point2d_to_index(map_builder.amulet_start);
+        map_builder.map.tiles[exit_idx] = TileType::Exit;
         map_builder.monster_spawns.iter().for_each(|pos| {
-            spawn_entity(&mut self.ecs, &mut rng, *pos);
+            spawn_entity(&mut ecs, &mut rng, *pos);
         });
-        self.resources.insert(map_builder.map);
-        self.resources.insert(Camera::new(map_builder.player_start));
-        self.resources.insert(TurnState::AwaitingInput);
-        self.resources.insert(map_builder.theme);
+        resources.insert(map_builder.map);
+        resources.insert(Camera::new(map_builder.player_start));
+        resources.insert(TurnState::AwaitingInput);
+        resources.insert(map_builder.theme);
     }
-    fn advance_level(&mut self) {}
+    /// 1.删去除玩家和玩家所有道具意外的所有实体
+    /// 2.设置FieldofView的is_dirty标识符以正确生成视场
+    /// 3.生成新的地图
+    /// 4.检查关卡等级，0/1生成出口，2生成雅拉的护身符
+    /// 5.放置怪物，初始化其他资源
+    fn advance_level(&mut self) {
+        let player_entity = *<&Entity>::query()
+            .filter(component::<Player>())
+            .iter(&mut self.ecs)
+            .nth(0)
+            .unwrap();
+        use std::collections::HashSet;
+        let mut entities_to_keep = HashSet::new();
+        entities_to_keep.insert(player_entity);
+        <(Entity, &Carried)>::query()
+            .iter(&self.ecs)
+            .filter(|(_e, carry)| carry.0 == player_entity)
+            .map(|(e, _)| *e)
+            .for_each(|e| {
+                entities_to_keep.insert(e);
+            });
+        //* 使用指向父级ECS世界的可变引用作为参数来调用 new() 方法，这样就可以在ECS的系统之外创建一个 CommandBuffer. */
+        let mut cb = CommandBuffer::new(&mut self.ecs);
+        //* 使用Entity::query()方法来查询所有实体 */
+        for e in Entity::query().iter(&mut self.ecs) {
+            //* 不在entities_to_keep中的实体，都被移除 */
+            if !entities_to_keep.contains(e) {
+                cb.remove(*e);
+            }
+        }
+        //* 调用flush()方法，方可将所有命令应用到ECS世界 */
+        cb.flush(&mut self.ecs);
+        <&mut FeildOfView>::query()
+            .iter_mut(&mut self.ecs)
+            .for_each(|fov| fov.is_dirty = true);
+        let mut rng = RandomNumberGenerator::new();
+        let mut map_builder = MapBuilder::new(&mut rng);
+        let mut map_level = 0;
+        <(&mut Player, &mut Point)>::query()
+            .iter_mut(&mut self.ecs)
+            .for_each(|(player,pos)|{
+                player.map_level += 1;
+                map_level = player.map_level;
+                pos.x = map_builder.player_start.x;
+                pos.y = map_builder.player_start.y;
+            });
+        if map_level == MAX_LEVEL {
+            spawn_amulet_of_yala(&mut self.ecs, map_builder.amulet_start);
+        }else {
+            let exit_idx = map_builder.map.point2d_to_index(map_builder.amulet_start);
+            map_builder.map.tiles[exit_idx] = TileType::Exit;
+        }
+    }
 }
 
 impl GameState for State {
