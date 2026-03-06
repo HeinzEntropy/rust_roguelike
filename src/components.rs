@@ -102,3 +102,9 @@ pub struct Rest {
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct RestCounter(pub usize); //休息计数器组件
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct Damage(pub i32); //基础伤害组件
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct Weapon; //武器组件

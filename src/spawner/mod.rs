@@ -27,7 +27,7 @@ pub struct Template {
     pub base_damage: Option<i32>,
 }
 
-#[derive(Clone, Deserialize, Debug)]
+#[derive(Clone, Deserialize, Debug, PartialEq)]
 pub enum EntityType {
     Enemy,
     Item,
@@ -101,6 +101,12 @@ impl Templates {
                     _ => println!("Warning! We don't know how to provide: {}", provides),
                 })
         }
+        if let Some(damage) = &template.base_damage {
+            commands.add_component(entity, Damage(*damage));
+            if template.entity_type == EntityType::Item {
+                commands.add_component(entity, Weapon {});
+            }
+        }
     }
 }
 const PLAYER_MAX_HEALTH: i32 = 50;
@@ -118,6 +124,7 @@ pub fn spawn_player(ecs: &mut World, pos: Point) {
         },
         FeildOfView::new(8),
         RestCounter(0),
+        Damage(1),
     ));
 }
 

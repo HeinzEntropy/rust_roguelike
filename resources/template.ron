@@ -31,7 +31,7 @@ Templates(
             levels : [0 , 1 ,2],
             frequency : 1,
             base_damage : Some(1),
-        )
+        ),
         Template(
             entity_type : Enemy,
             name : "Goblin",
