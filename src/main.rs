@@ -54,9 +54,7 @@ impl State {
         //spawn_amulet_of_yala(&mut ecs, map_builder.amulet_start);
         let exit_idx = map_builder.map.point2d_to_index(map_builder.amulet_start);
         map_builder.map.tiles[exit_idx] = TileType::Exit;
-        map_builder.monster_spawns.iter().for_each(|pos| {
-            spawn_entity(&mut ecs, &mut rng, *pos);
-        });
+        spawn_level(&mut ecs, &mut rng, 0, &map_builder.monster_spawns);
         resources.insert(map_builder.map);
         resources.insert(Camera::new(map_builder.player_start));
         resources.insert(TurnState::AwaitingInput);
@@ -119,21 +117,19 @@ impl State {
     }
 
     fn reset_game_state(&mut self) {
-        let mut ecs = World::default();
-        let mut resources = Resources::default();
+        self.ecs = World::default();
+        self.resources = Resources::default();
         let mut rng = RandomNumberGenerator::new();
         let mut map_builder = MapBuilder::new(&mut rng);
-        spawn_player(&mut ecs, map_builder.player_start);
+        spawn_player(&mut self.ecs, map_builder.player_start);
         //spawn_amulet_of_yala(&mut ecs, map_builder.amulet_start);
         let exit_idx = map_builder.map.point2d_to_index(map_builder.amulet_start);
         map_builder.map.tiles[exit_idx] = TileType::Exit;
-        map_builder.monster_spawns.iter().for_each(|pos| {
-            spawn_entity(&mut ecs, &mut rng, *pos);
-        });
-        resources.insert(map_builder.map);
-        resources.insert(Camera::new(map_builder.player_start));
-        resources.insert(TurnState::AwaitingInput);
-        resources.insert(map_builder.theme);
+        spawn_level(&mut self.ecs, &mut rng, 0, &map_builder.monster_spawns);
+        self.resources.insert(map_builder.map);
+        self.resources.insert(Camera::new(map_builder.player_start));
+        self.resources.insert(TurnState::AwaitingInput);
+        self.resources.insert(map_builder.theme);
     }
     /// 1.删去除玩家和玩家所有道具意外的所有实体
     /// 2.设置FieldofView的is_dirty标识符以正确生成视场
@@ -141,7 +137,7 @@ impl State {
     /// 4.检查关卡等级，0/1生成出口，2生成雅拉的护身符
     /// 5.放置怪物，初始化其他资源
     fn advance_level(&mut self) {
-        let player_entity = *<&Entity>::query()
+        let player_entity = *<Entity>::query()
             .filter(component::<Player>())
             .iter(&mut self.ecs)
             .nth(0)
@@ -175,7 +171,7 @@ impl State {
         let mut map_level = 0;
         <(&mut Player, &mut Point)>::query()
             .iter_mut(&mut self.ecs)
-            .for_each(|(player,pos)|{
+            .for_each(|(player, pos)| {
                 player.map_level += 1;
                 map_level = player.map_level;
                 pos.x = map_builder.player_start.x;
@@ -183,10 +179,15 @@ impl State {
             });
         if map_level == MAX_LEVEL {
             spawn_amulet_of_yala(&mut self.ecs, map_builder.amulet_start);
-        }else {
+        } else {
             let exit_idx = map_builder.map.point2d_to_index(map_builder.amulet_start);
             map_builder.map.tiles[exit_idx] = TileType::Exit;
         }
+        spawn_level(&mut self.ecs, &mut rng, map_level as usize, &map_builder.monster_spawns);
+        self.resources.insert(map_builder.map);
+        self.resources.insert(Camera::new(map_builder.player_start));
+        self.resources.insert(TurnState::AwaitingInput);
+        self.resources.insert(map_builder.theme);
     }
 }
 
