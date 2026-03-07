@@ -7,6 +7,7 @@ use crate::prelude::*;
 #[write_component(Health)]
 #[read_component(Item)]
 #[read_component(Carried)]
+#[read_component(Weapon)]
 pub fn player_input(
     ecs: &mut SubWorld,
     commands: &mut CommandBuffer,
@@ -34,8 +35,21 @@ pub fn player_input(
                     .iter(ecs)
                     .filter(|(_entity, _item, item_pos)| **item_pos == player_pos)
                     .for_each(|(entity, _item, _item_pos)| {
+                        //* 逻辑顺序存疑，实际测试看看 */
+                        //* 实际测试发现，逻辑是正确的 */
+                        //* 理由：CommandBuffer会延迟执行，且在先前的任务中只会读取已存在的组件，不会实时更改 */
                         commands.remove_component::<Point>(*entity);
                         commands.add_component(*entity, Carried(player));
+                        if let Ok(e) = ecs.entry_ref(*entity) {
+                            if e.get_component::<Weapon>().is_ok() {
+                                <(Entity, &Weapon, &Carried)>::query()
+                                    .iter(ecs)
+                                    .filter(|(_, _, carried)| carried.0 == player)
+                                    .for_each(|(e, _, _)| {
+                                        commands.remove(*e);
+                                    })
+                            }
+                        }
                     });
                 Point::zero()
             }

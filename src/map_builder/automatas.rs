@@ -17,7 +17,7 @@ impl MapArchitect for CellularAutomataArchitect {
         };
         self.random_noise_map(rng, &mut mb.map);
         for _ in 0..10 {
-            self.iteration(&mut mb.map);
+            self.iteration(&mut mb.map);//迭代
         }
         let start = self.find_start(&mb.map);
         let dijkstra_map = DijkstraMap::new(
